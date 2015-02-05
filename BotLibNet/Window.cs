@@ -22,15 +22,16 @@ namespace BotLibNet
 
         #region GetPosition
         [DllImport("user32.dll")]
-        private static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
-        public static Rect GetPosition(string processName)
+        private static extern bool GetWindowPos(IntPtr hwnd, ref Rect rectangle);
+        public static Point GetPosition(string processName)
         {
             Process[] processes = Process.GetProcessesByName(processName);
             Process process = processes[0];
             IntPtr ptr = process.MainWindowHandle;
             Rect WinRect = new Rect();
-            GetWindowRect(ptr, ref WinRect);
-            return WinRect;
+            GetWindowPos(ptr, ref WinRect);
+            Point position = new Point(WinRect.Left, WinRect.Top);
+            return position;
         }
         #endregion
 
@@ -45,7 +46,6 @@ namespace BotLibNet
             return SetWindowPos(ptr, IntPtr.Zero, x, y, 0, 0, 5);
         }
         #endregion
-
 
         #region GetSize
         public static Size GetSize(string processName)
@@ -62,6 +62,31 @@ namespace BotLibNet
         }
         #endregion
 
+        #region SetSize
+        [DllImport("user32.dll")]
+        private static extern bool SetWindowSize(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+        public static bool SetSize(string processName, int width, int height)
+        {
+            Process[] processes = Process.GetProcessesByName(processName);
+            Process process = processes[0];
+            IntPtr ptr = process.MainWindowHandle;
+            return SetWindowSize(ptr, GetPosition(processName).X, GetPosition(processName).Y, width, height, true);
+        }
+        #endregion
+
+        #region GetRectangle
+        [DllImport("user32.dll")]
+        private static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
+        public static Rect GetRectangle(string processName)
+        {
+            Process[] processes = Process.GetProcessesByName(processName);
+            Process process = processes[0];
+            IntPtr ptr = process.MainWindowHandle;
+            Rect WinRect = new Rect();
+            GetWindowRect(ptr, ref WinRect);
+            return WinRect;
+        }
+        #endregion
 
     }
 }
