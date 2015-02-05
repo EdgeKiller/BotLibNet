@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -25,8 +26,8 @@ namespace BotLibNet
         public static Rect GetPosition(string processName)
         {
             Process[] processes = Process.GetProcessesByName(processName);
-            Process lol = processes[0];
-            IntPtr ptr = lol.MainWindowHandle;
+            Process process = processes[0];
+            IntPtr ptr = process.MainWindowHandle;
             Rect WinRect = new Rect();
             GetWindowRect(ptr, ref WinRect);
             return WinRect;
@@ -39,12 +40,27 @@ namespace BotLibNet
         public static bool SetPosition(string processName, int x, int y)
         {
             Process[] processes = Process.GetProcessesByName(processName);
-            Process lol = processes[0];
-            IntPtr ptr = lol.MainWindowHandle;
+            Process process = processes[0];
+            IntPtr ptr = process.MainWindowHandle;
             return SetWindowPos(ptr, IntPtr.Zero, x, y, 0, 0, 5);
         }
         #endregion
 
+
+        #region GetSize
+        public static Size GetSize(string processName)
+        {
+            Process[] processes = Process.GetProcessesByName(processName);
+            Process process = processes[0];
+            IntPtr ptr = process.MainWindowHandle;
+            Rect WinRect = new Rect();
+            GetWindowRect(ptr, ref WinRect);
+            int height = WinRect.Bottom - WinRect.Top;
+            int width = WinRect.Right - WinRect.Left;
+            Size size = new Size(width, height);
+            return size;
+        }
+        #endregion
 
 
     }
