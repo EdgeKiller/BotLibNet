@@ -19,20 +19,22 @@ namespace BotLibNet
 
     public class Window
     {
-
-
         #region GetPosition
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
         public static Point GetPosition(string processName)
         {
             Process[] processes = Process.GetProcessesByName(processName);
-            Process process = processes[0];
-            IntPtr ptr = process.MainWindowHandle;
-            Rect WinRect = new Rect();
-            GetWindowRect(ptr, ref WinRect);
-            Point position = new Point(WinRect.Left, WinRect.Top);
-            return position;
+            if (processes.Length > 0)
+            {
+                Process process = processes[0];
+                IntPtr ptr = process.MainWindowHandle;
+                Rect WinRect = new Rect();
+                GetWindowRect(ptr, ref WinRect);
+                Point position = new Point(WinRect.Left, WinRect.Top);
+                return position;
+            }
+            return new Point(-1, -1);
         }
         #endregion
 
@@ -42,9 +44,14 @@ namespace BotLibNet
         public static bool SetPosition(string processName, int x, int y)
         {
             Process[] processes = Process.GetProcessesByName(processName);
-            Process process = processes[0];
-            IntPtr ptr = process.MainWindowHandle;
-            return SetWindowPos(ptr, IntPtr.Zero, x, y, 0, 0, 5);
+            if (processes.Length > 0)
+            {
+                Process process = processes[0];
+                IntPtr ptr = process.MainWindowHandle;
+                return SetWindowPos(ptr, IntPtr.Zero, x, y, 0, 0, 5);
+            }
+            return false;
+
         }
         #endregion
 
@@ -52,14 +59,18 @@ namespace BotLibNet
         public static Size GetSize(string processName)
         {
             Process[] processes = Process.GetProcessesByName(processName);
-            Process process = processes[0];
-            IntPtr ptr = process.MainWindowHandle;
-            Rect WinRect = new Rect();
-            GetWindowRect(ptr, ref WinRect);
-            int height = WinRect.Bottom - WinRect.Top;
-            int width = WinRect.Right - WinRect.Left;
-            Size size = new Size(width, height);
-            return size;
+            if (processes.Length > 0)
+            {
+                Process process = processes[0];
+                IntPtr ptr = process.MainWindowHandle;
+                Rect WinRect = new Rect();
+                GetWindowRect(ptr, ref WinRect);
+                int height = WinRect.Bottom - WinRect.Top;
+                int width = WinRect.Right - WinRect.Left;
+                Size size = new Size(width, height);
+                return size;
+            }
+            return new Size(-1, -1);
         }
         #endregion
 
@@ -69,11 +80,19 @@ namespace BotLibNet
         public static bool SetSize(string processName, int width, int height)
         {
             Process[] processes = Process.GetProcessesByName(processName);
-            Process process = processes[0];
-            IntPtr ptr = process.MainWindowHandle;
-            return MoveWindow(ptr, GetPosition(processName).X, GetPosition(processName).Y, width, height, true);
+            if (processes.Length > 0){
+                Process process = processes[0];
+                IntPtr ptr = process.MainWindowHandle;
+                return MoveWindow(ptr, GetPosition(processName).X, GetPosition(processName).Y, width, height, true);
+            }
+            return false;
         }
         #endregion
 
+        public static bool Exist(string processName)
+        {
+            Process[] processes = Process.GetProcessesByName(processName);
+            return processes.Length > 0 ? true : false;
+        }
     }
 }

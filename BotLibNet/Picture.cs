@@ -10,7 +10,6 @@ namespace BotLibNet
 {
     public class Picture
     {
-
         public static Color GetPixelColor(int x, int y)
         {
             Color pixelColor;
@@ -20,10 +19,5 @@ namespace BotLibNet
             pixelColor = printscreen.GetPixel(0, 0);
             return pixelColor;
         }
- 
-
-
-
-
     }
 }

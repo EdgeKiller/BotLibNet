@@ -35,7 +35,6 @@ namespace BotLibNet
         }
         #endregion
 
-
         public class Click
         {
             [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
