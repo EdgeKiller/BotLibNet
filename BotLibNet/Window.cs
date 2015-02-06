@@ -20,16 +20,17 @@ namespace BotLibNet
     public class Window
     {
 
+
         #region GetPosition
         [DllImport("user32.dll")]
-        private static extern bool GetWindowPos(IntPtr hwnd, ref Rect rectangle);
+        private static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
         public static Point GetPosition(string processName)
         {
             Process[] processes = Process.GetProcessesByName(processName);
             Process process = processes[0];
             IntPtr ptr = process.MainWindowHandle;
             Rect WinRect = new Rect();
-            GetWindowPos(ptr, ref WinRect);
+            GetWindowRect(ptr, ref WinRect);
             Point position = new Point(WinRect.Left, WinRect.Top);
             return position;
         }
@@ -64,27 +65,13 @@ namespace BotLibNet
 
         #region SetSize
         [DllImport("user32.dll")]
-        private static extern bool SetWindowSize(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+        private static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
         public static bool SetSize(string processName, int width, int height)
         {
             Process[] processes = Process.GetProcessesByName(processName);
             Process process = processes[0];
             IntPtr ptr = process.MainWindowHandle;
-            return SetWindowSize(ptr, GetPosition(processName).X, GetPosition(processName).Y, width, height, true);
-        }
-        #endregion
-
-        #region GetRectangle
-        [DllImport("user32.dll")]
-        private static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
-        public static Rect GetRectangle(string processName)
-        {
-            Process[] processes = Process.GetProcessesByName(processName);
-            Process process = processes[0];
-            IntPtr ptr = process.MainWindowHandle;
-            Rect WinRect = new Rect();
-            GetWindowRect(ptr, ref WinRect);
-            return WinRect;
+            return MoveWindow(ptr, GetPosition(processName).X, GetPosition(processName).Y, width, height, true);
         }
         #endregion
 
