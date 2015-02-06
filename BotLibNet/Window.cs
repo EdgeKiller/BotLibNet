@@ -89,10 +89,13 @@ namespace BotLibNet
         }
         #endregion
 
+        #region Exist
         public static bool Exist(string processName)
         {
             Process[] processes = Process.GetProcessesByName(processName);
             return processes.Length > 0 ? true : false;
         }
+        #endregion
+
     }
 }
