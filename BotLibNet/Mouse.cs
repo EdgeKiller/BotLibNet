@@ -19,7 +19,7 @@ namespace BotLibNet
         Middle
     }
 
-    public class Mouse
+    public class BotMouse
     {
         #region GetPosition
         public static Point GetPosition()
@@ -44,9 +44,7 @@ namespace BotLibNet
         }
         #endregion
 
-        //OLD CLICK METHOD
-        #region OldClick
-        /*
+        #region Click
         public class Click
         {
             [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
@@ -166,11 +164,10 @@ namespace BotLibNet
             }
 
         }
-        */
+        
         #endregion
 
-
-        #region Click
+        #region SendClick
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
         static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
@@ -197,12 +194,12 @@ namespace BotLibNet
             return ((HiWord << 16) | (LoWord & 0xffff));
         }
 
-        public static void SendClick(string processName, WButton button, int x, int y, bool doubleklick)
+        public static void SendClick(string processName, WButton button, Point pos, bool doubleclick)
         {
             Process[] processes = Process.GetProcessesByName(processName);
             Process process = processes[0];
             IntPtr hWnd = process.MainWindowHandle;
-            int LParam = MakeLParam(x, y), btnDown = 0, btnUp = 0;
+            int LParam = MakeLParam(pos.X, pos.Y), btnDown = 0, btnUp = 0;
             switch (button)
             {
                 case WButton.Left:
@@ -218,7 +215,7 @@ namespace BotLibNet
                     btnUp = (int)WMessages.WM_MBUTTONUP;
                     break;
             }
-            if (doubleklick)
+            if (doubleclick)
             {
                 _SendMessage(hWnd, btnDown, 0, LParam);
                 _SendMessage(hWnd, btnUp, 0, LParam);

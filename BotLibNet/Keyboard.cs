@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace BotLibNet
 {
-    public class Keyboard
+    public class BotKeyboard
     {
         #region Keys
         [DllImport("user32.dll")]

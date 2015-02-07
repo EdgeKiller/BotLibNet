@@ -17,7 +17,7 @@ namespace BotLibNet
         public int Bottom { get; set; }
     }
 
-    public class Window
+    public class BotWindow
     {
         #region GetPosition
         [DllImport("user32.dll")]
