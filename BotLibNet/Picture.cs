@@ -15,13 +15,21 @@ namespace BotLibNet
             Color pixelColor;
             Point windowPos = BotWindow.GetPosition(processName);
             Point newPos = new Point(windowPos.X + pos.X, windowPos.Y + pos.Y);
-            Bitmap printscreen = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics graphics = Graphics.FromImage(printscreen as Image);
-            graphics.CopyFromScreen(newPos.X, newPos.Y, 0, 0, printscreen.Size);
-            pixelColor = printscreen.GetPixel(0, 0);
+            Bitmap pixel = new Bitmap(1, 1);
+            Graphics graphics = Graphics.FromImage(pixel as Image);
+            graphics.CopyFromScreen(newPos.X, newPos.Y, 0, 0, pixel.Size);
+            pixelColor = pixel.GetPixel(0, 0);
             return pixelColor;
         }
 
-        //public static Bitmap CaptureRegion()
+        public static Bitmap CaptureRegion(string processName, Rectangle region)
+        {
+            Bitmap image = new Bitmap(region.Width, region.Height);
+            Point windowPos = BotWindow.GetPosition(processName);
+            Point newPos = new Point(windowPos.X + region.X, windowPos.Y + region.Y);
+            Graphics graphics = Graphics.FromImage(image as Image);
+            graphics.CopyFromScreen(newPos.X, newPos.Y, 0, 0, new Size(region.Width, region.Height));
+            return image;
+        }
     }
 }
