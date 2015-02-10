@@ -13,72 +13,42 @@ namespace BotLibNet
 {
     public class BotImage
     {
-        /*
-        public static Color GetPixelColor(string processName, Point pos)
-        {
-            Color pixelColor;
-            Point windowPos = BotWindow.GetPosition(processName);
-            Point newPos = new Point(windowPos.X + pos.X, windowPos.Y + pos.Y);
-            Bitmap pixel = new Bitmap(1, 1);
-            Graphics graphics = Graphics.FromImage(pixel as Image);
-            graphics.CopyFromScreen(newPos.X, newPos.Y, 0, 0, pixel.Size);
-            pixelColor = pixel.GetPixel(0, 0);
-            return pixelColor;
-        }*/
+        private IntPtr process;
 
-        /*
-        public static Bitmap CaptureRegion(string processName, Rectangle region)
+        public BotImage(IntPtr proc)
         {
-            Bitmap image = new Bitmap(region.Width, region.Height);
-            Point windowPos = BotWindow.GetPosition(processName);
-            Point newPos = new Point(windowPos.X + region.X, windowPos.Y + region.Y);
-            Graphics graphics = Graphics.FromImage(image as Image);
-            graphics.CopyFromScreen(newPos.X, newPos.Y, 0, 0, new Size(region.Width, region.Height));
-            return image;
+            this.process = proc;
         }
-        */
 
-        public static Color GetPixelColor(string processName, Point pos)
+        public Color GetPixelColor(Point pos)
         {
             Color pixelColor = new Color();
             Bitmap image = new Bitmap(1, 1);
-            Process[] processes = Process.GetProcessesByName(processName);
-            if (processes.Length > 0)
-            {
-                Process process = processes[0];
-                IntPtr hwnd = process.MainWindowHandle;
-                RECT rc;
-                GetWindowRect(hwnd, out rc);
-                Bitmap bmp = new Bitmap(rc.Width, rc.Height, PixelFormat.Format32bppArgb);
-                Graphics gfxBmp = Graphics.FromImage(bmp);
-                IntPtr hdcBitmap = gfxBmp.GetHdc();
-                PrintWindow(hwnd, hdcBitmap, 0);
-                gfxBmp.ReleaseHdc(hdcBitmap);
-                gfxBmp.Dispose();
-                image = bmp.Clone(new Rectangle(pos.X, pos.Y, 1, 1), PixelFormat.Format32bppArgb);
-                pixelColor = image.GetPixel(0, 0);
-            }           
+            RECT rc;
+            GetWindowRect(process, out rc);
+            Bitmap bmp = new Bitmap(rc.Width, rc.Height, PixelFormat.Format32bppArgb);
+            Graphics gfxBmp = Graphics.FromImage(bmp);
+            IntPtr hdcBitmap = gfxBmp.GetHdc();
+            PrintWindow(process, hdcBitmap, 0);
+            gfxBmp.ReleaseHdc(hdcBitmap);
+            gfxBmp.Dispose();
+            image = bmp.Clone(new Rectangle(pos.X, pos.Y, 1, 1), PixelFormat.Format32bppArgb);
+            pixelColor = image.GetPixel(0, 0);
             return pixelColor;
         }
 
-        public static Bitmap CaptureRegion(string processName, Rectangle region)
+        public Bitmap CaptureRegion(string processName, Rectangle region)
         {
             Bitmap image = new Bitmap(region.Width, region.Height);
-            Process[] processes = Process.GetProcessesByName(processName);
-            if (processes.Length > 0)
-            {
-                Process process = processes[0];
-                IntPtr hwnd = process.MainWindowHandle;
-                RECT rc;
-                GetWindowRect(hwnd, out rc);
-                Bitmap bmp = new Bitmap(rc.Width, rc.Height, PixelFormat.Format32bppArgb);
-                Graphics gfxBmp = Graphics.FromImage(bmp);
-                IntPtr hdcBitmap = gfxBmp.GetHdc();
-                PrintWindow(hwnd, hdcBitmap, 0);
-                gfxBmp.ReleaseHdc(hdcBitmap);
-                gfxBmp.Dispose();
-                image = bmp.Clone(new Rectangle(region.X, region.Y, region.Width, region.Height), PixelFormat.Format32bppArgb);
-            }
+            RECT rc;
+            GetWindowRect(process, out rc);
+            Bitmap bmp = new Bitmap(rc.Width, rc.Height, PixelFormat.Format32bppArgb);
+            Graphics gfxBmp = Graphics.FromImage(bmp);
+            IntPtr hdcBitmap = gfxBmp.GetHdc();
+            PrintWindow(process, hdcBitmap, 0);
+            gfxBmp.ReleaseHdc(hdcBitmap);
+            gfxBmp.Dispose();
+            image = bmp.Clone(new Rectangle(region.X, region.Y, region.Width, region.Height), PixelFormat.Format32bppArgb);
             return image;
         }
 
@@ -88,28 +58,19 @@ namespace BotLibNet
         public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
         [DllImport("user32.dll")]
         public static extern bool PrintWindow(IntPtr hWnd, IntPtr hdcBlt, int nFlags);
-        public static Bitmap GetWindowImage(string processName)
+        public Bitmap GetWindowImage()
         {
-            Process[] processes = Process.GetProcessesByName(processName);
-            if (processes.Length > 0)
-            {
-                Process process = processes[0];
-                IntPtr hwnd = process.MainWindowHandle;
-                RECT rc;
-                GetWindowRect(hwnd, out rc);
-                Bitmap bmp = new Bitmap(rc.Width, rc.Height, PixelFormat.Format32bppArgb);
-                Graphics gfxBmp = Graphics.FromImage(bmp);
-                IntPtr hdcBitmap = gfxBmp.GetHdc();
-                PrintWindow(hwnd, hdcBitmap, 0);
-                gfxBmp.ReleaseHdc(hdcBitmap);
-                gfxBmp.Dispose();
-                return bmp;
-            }
-            return new Bitmap(1, 1);
+            RECT rc;
+            GetWindowRect(process, out rc);
+            Bitmap bmp = new Bitmap(rc.Width, rc.Height, PixelFormat.Format32bppArgb);
+            Graphics gfxBmp = Graphics.FromImage(bmp);
+            IntPtr hdcBitmap = gfxBmp.GetHdc();
+            PrintWindow(process, hdcBitmap, 0);
+            gfxBmp.ReleaseHdc(hdcBitmap);
+            gfxBmp.Dispose();
+            return bmp;
         }
-        #endregion
 
-        #region GetScreenImageOther
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {

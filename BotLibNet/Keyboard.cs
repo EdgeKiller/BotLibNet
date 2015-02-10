@@ -11,26 +11,24 @@ namespace BotLibNet
 {
     public class BotKeyboard
     {
+        private IntPtr process;
+
+        public BotKeyboard(IntPtr proc)
+        {
+            this.process = proc;
+        }
+
         #region Keys
         [DllImport("user32.dll")]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-
-        public static void SendKeyStroke(string processName, Keys key)
+        public void SendKeyStroke(Keys key)
         {
-            Process[] processes = Process.GetProcessesByName(processName);
-            if (processes.Length > 0)
-            {
-                Process process = processes[0];
-                IntPtr ptr = process.MainWindowHandle;
-                const uint WM_KEYDOWN = 0x100;
-                const uint WM_KEYUP = 0x101;
-                int k = (int)key;
-                SendMessage(ptr, WM_KEYDOWN, ((IntPtr)k), (IntPtr)0);
-                SendMessage(ptr, WM_KEYUP, ((IntPtr)k), (IntPtr)0);
-            }
-
+            const uint WM_KEYDOWN = 0x100;
+            const uint WM_KEYUP = 0x101;
+            int k = (int)key;
+            SendMessage(process, WM_KEYDOWN, ((IntPtr)k), (IntPtr)0);
+            SendMessage(process, WM_KEYUP, ((IntPtr)k), (IntPtr)0);
         }
         #endregion
-
     }
 }

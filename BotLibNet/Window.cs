@@ -19,81 +19,52 @@ namespace BotLibNet
 
     public class BotWindow
     {
+        private IntPtr process;
+
+        public BotWindow(IntPtr proc)
+        {
+            this.process = proc;
+        }
+
         #region GetPosition
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
-        public static Point GetPosition(string processName)
+        public Point GetPosition()
         {
-            Process[] processes = Process.GetProcessesByName(processName);
-            if (processes.Length > 0)
-            {
-                Process process = processes[0];
-                IntPtr ptr = process.MainWindowHandle;
-                Rect WinRect = new Rect();
-                GetWindowRect(ptr, ref WinRect);
-                Point position = new Point(WinRect.Left, WinRect.Top);
-                return position;
-            }
-            return new Point(-1, -1);
+            Rect WinRect = new Rect();
+            GetWindowRect(process, ref WinRect);
+            Point position = new Point(WinRect.Left, WinRect.Top);
+            return position;
         }
         #endregion
 
         #region SetPosition
         [DllImport("user32.dll")]
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-        public static bool SetPosition(string processName, int x, int y)
+        public bool SetPosition(int x, int y)
         {
-            Process[] processes = Process.GetProcessesByName(processName);
-            if (processes.Length > 0)
-            {
-                Process process = processes[0];
-                IntPtr ptr = process.MainWindowHandle;
-                return SetWindowPos(ptr, IntPtr.Zero, x, y, 0, 0, 5);
-            }
-            return false;
-
+            return SetWindowPos(process, IntPtr.Zero, x, y, 0, 0, 5);
         }
         #endregion
 
         #region GetSize
-        public static Size GetSize(string processName)
+        public Size GetSize()
         {
-            Process[] processes = Process.GetProcessesByName(processName);
-            if (processes.Length > 0)
-            {
-                Process process = processes[0];
-                IntPtr ptr = process.MainWindowHandle;
-                Rect WinRect = new Rect();
-                GetWindowRect(ptr, ref WinRect);
-                int height = WinRect.Bottom - WinRect.Top;
-                int width = WinRect.Right - WinRect.Left;
-                Size size = new Size(width, height);
-                return size;
-            }
-            return new Size(-1, -1);
+            Rect WinRect = new Rect();
+            GetWindowRect(process, ref WinRect);
+            int height = WinRect.Bottom - WinRect.Top;
+            int width = WinRect.Right - WinRect.Left;
+            Size size = new Size(width, height);
+            return size;
         }
         #endregion
 
         #region SetSize
         [DllImport("user32.dll")]
         private static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
-        public static bool SetSize(string processName, int width, int height)
+        public bool SetSize(int width, int height)
         {
-            Process[] processes = Process.GetProcessesByName(processName);
-            if (processes.Length > 0){
-                Process process = processes[0];
-                IntPtr ptr = process.MainWindowHandle;
-                return MoveWindow(ptr, GetPosition(processName).X, GetPosition(processName).Y, width, height, true);
-            }
-            return false;
-        }
-        #endregion
-
-        #region Exist
-        public static bool Exist(string processName)
-        {
-            Process[] processes = Process.GetProcessesByName(processName);
-            return processes.Length > 0 ? true : false;
+            return MoveWindow(process, GetPosition().X, GetPosition().Y, width, height, true);
         }
         #endregion
 

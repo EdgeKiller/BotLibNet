@@ -21,8 +21,15 @@ namespace BotLibNet
 
     public class BotMouse
     {
+        private IntPtr process;
+
+        public BotMouse(IntPtr proc)
+        {
+            this.process = proc;
+        }
+
         #region GetPosition
-        public static Point GetPosition()
+        public Point GetPosition()
         {
             Point mousePosition = Cursor.Position;
             return mousePosition;
@@ -30,13 +37,13 @@ namespace BotLibNet
         #endregion
 
         #region SetPosition
-        public static bool SetPosition(int x, int y)
+        public bool SetPosition(int x, int y)
         {
             try
             {
                 Cursor.Position = new Point(x, y);
             }
-            catch 
+            catch
             {
                 return false;
             }
@@ -44,132 +51,9 @@ namespace BotLibNet
         }
         #endregion
 
-        #region Click
-        public class Click
-        {
-            [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-            private static extern void mouse_event(uint dwFlags, int dx, int dy, uint cButtons, uint dwExtraInfo);
-            private const int MOUSEEVENTF_LEFTDOWN = 0x02;
-            private const int MOUSEEVENTF_LEFTUP = 0x04;
-            private const int MOUSEEVENTF_RIGHTDOWN = 0x08;
-            private const int MOUSEEVENTF_RIGHTUP = 0x10;
-            private const int MOUSEEVENTF_MIDDLEDOWN = 0x20;
-            private const int MOUSEEVENTF_MIDDLEUP = 0x40;
-
-            public class Left
-            {
-                public static bool Single()
-                {
-                    try
-                    {
-                        
-                        int x = GetPosition().X;
-                        int y = GetPosition().Y;
-                        mouse_event(MOUSEEVENTF_LEFTDOWN, x, y, 0, 0);
-                        mouse_event(MOUSEEVENTF_LEFTUP, x, y, 0, 0);
-                        
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                    return true;
-                }
-
-                public static bool Double(int millisecond = 100)
-                {
-                    try
-                    {
-                        int x = GetPosition().X;
-                        int y = GetPosition().Y;
-                        mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, x, y, 0, 0);
-                        Thread.Sleep(millisecond);
-                        mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, x, y, 0, 0);
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                    return true;
-                }
-
-                public static bool Stay(int millisecond)
-                {
-                    try
-                    {
-                        int x = GetPosition().X;
-                        int y = GetPosition().Y;
-                        mouse_event(MOUSEEVENTF_LEFTDOWN, x, y, 0, 0);
-                        Thread.Sleep(millisecond);
-                        mouse_event(MOUSEEVENTF_LEFTUP, x, y, 0, 0);
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                    return true;
-                }
-            }
-
-            public class Right
-            {
-                public static bool Single()
-                {
-                    try
-                    {
-                        int x = GetPosition().X;
-                        int y = GetPosition().Y;
-                        mouse_event(MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_RIGHTUP, x, y, 0, 0);
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                    return true;
-                }
-
-                public static bool Double(int millisecond = 100)
-                {
-                    try
-                    {
-                        int x = GetPosition().X;
-                        int y = GetPosition().Y;
-                        mouse_event(MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_RIGHTUP, x, y, 0, 0);
-                        Thread.Sleep(millisecond);
-                        mouse_event(MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_RIGHTUP, x, y, 0, 0);
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                    return true;
-                }
-
-                public static bool Stay(int millisecond)
-                {
-                    try
-                    {
-                        int x = GetPosition().X;
-                        int y = GetPosition().Y;
-                        mouse_event(MOUSEEVENTF_RIGHTDOWN, x, y, 0, 0);
-                        Thread.Sleep(millisecond);
-                        mouse_event(MOUSEEVENTF_RIGHTUP, x, y, 0, 0);
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                    return true;
-                }
-            }
-
-        }
-        
-        #endregion
-
         #region SendClick
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
-        static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
         private enum WMessages : int
         {
@@ -184,21 +68,18 @@ namespace BotLibNet
             WM_MBUTTONDBLCLK = 0x209, //Middle mousebutton doubleclick
         }
 
-        private static void _SendMessage(IntPtr handle, int Msg, int wParam, int lParam)
+        private void _SendMessage(IntPtr handle, int Msg, int wParam, int lParam)
         {
             SendMessage(handle, Msg, wParam, lParam);
         }
 
-        private static int MakeLParam(int LoWord, int HiWord)
+        private int MakeLParam(int LoWord, int HiWord)
         {
             return ((HiWord << 16) | (LoWord & 0xffff));
         }
 
-        public static void SendClick(string processName, WButton button, Point pos, bool doubleclick)
+        public void SendClick(WButton button, Point pos, bool doubleclick)
         {
-            Process[] processes = Process.GetProcessesByName(processName);
-            Process process = processes[0];
-            IntPtr hWnd = process.MainWindowHandle;
             int LParam = MakeLParam(pos.X, pos.Y), btnDown = 0, btnUp = 0;
             switch (button)
             {
@@ -217,19 +98,20 @@ namespace BotLibNet
             }
             if (doubleclick)
             {
-                _SendMessage(hWnd, btnDown, 0, LParam);
-                _SendMessage(hWnd, btnUp, 0, LParam);
-                _SendMessage(hWnd, btnDown, 0, LParam);
-                _SendMessage(hWnd, btnUp, 0, LParam);
+                _SendMessage(process, btnDown, 0, LParam);
+                _SendMessage(process, btnUp, 0, LParam);
+                _SendMessage(process, btnDown, 0, LParam);
+                _SendMessage(process, btnUp, 0, LParam);
             }
             else
             {
-                _SendMessage(hWnd, btnDown, 0, LParam);
-                _SendMessage(hWnd, btnUp, 0, LParam);
+                _SendMessage(process, btnDown, 0, LParam);
+                _SendMessage(process, btnUp, 0, LParam);
             }
 
         }
         #endregion
 
     }
+
 }
