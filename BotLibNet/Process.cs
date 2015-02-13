@@ -11,19 +11,29 @@ namespace BotLibNet
     {
         public BotKeyboard keyboard;
         public BotMouse mouse;
+        public BotWindow window;
+        public BotImage image;
+        public IntPtr process;
 
-        private IntPtr process;
-
-        public BotProcess(string processName)
+        public BotProcess()
         {
+
+        }
+
+        public bool SetProcess(string processName)
+        {
+            process = IntPtr.Zero;
             Process[] processesList = Process.GetProcessesByName(processName);
             if (processesList.Length > 0)
             {
                 process = processesList[0].MainWindowHandle;
                 keyboard = new BotKeyboard(process);
                 mouse = new BotMouse(process);
+                window = new BotWindow(process);
+                image = new BotImage(process);
+                return true;
             }
-            
+            return false;
         }
     }
 }

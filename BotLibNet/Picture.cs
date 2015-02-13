@@ -37,7 +37,7 @@ namespace BotLibNet
             return pixelColor;
         }
 
-        public Bitmap CaptureRegion(string processName, Rectangle region)
+        public Bitmap CaptureRegion(Rectangle region)
         {
             Bitmap image = new Bitmap(region.Width, region.Height);
             RECT rc;
