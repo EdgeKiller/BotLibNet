@@ -15,12 +15,7 @@ namespace BotLibNet
         public BotImage image;
         public IntPtr process;
 
-        public BotProcess()
-        {
-
-        }
-
-        public bool SetProcess(string processName)
+        public BotProcess(string processName)
         {
             process = IntPtr.Zero;
             Process[] processesList = Process.GetProcessesByName(processName);
@@ -31,9 +26,17 @@ namespace BotLibNet
                 mouse = new BotMouse(process);
                 window = new BotWindow(process);
                 image = new BotImage(process);
-                return true;
             }
-            return false;
         }
+
+        public static bool processExist(string processName)
+        {
+            Process[] processesList = Process.GetProcessesByName(processName);
+            if (processesList.Length > 0)
+                return true;
+            else
+                return false;
+        }
+
     }
 }
