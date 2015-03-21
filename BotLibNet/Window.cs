@@ -68,5 +68,19 @@ namespace BotLibNet
         }
         #endregion
 
+        #region RemoveBar
+        [DllImport("USER32.DLL")]
+        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        public bool RemoveWindowBorder(int width, int height)
+        {
+            const int GWL_STYLE = (-16);
+            const Int32 WS_VISIBLE = 0x10000000;
+            SetWindowLong(process, GWL_STYLE, (WS_VISIBLE));
+            SetPosition(0, 0);
+            SetSize(width, height);
+            return true;
+        }
+        #endregion
+
     }
 }
