@@ -1,3 +1,5 @@
+NEW VERSION (BotLibNet2) : https://github.com/valdgeorgio/BotLibNet2
+
 BotLibNet
 =========
 
@@ -15,11 +17,9 @@ BotLibNet
 
 **Can I help/contact you ?**
 
-- Sure, contact me to this mail adress : edgekillerfr@live.fr
+- Sure, contact me to this mail adress : contact@clashofbots.edgekiller.fr
 
 Next Things To Do :
 ===================
 
-- ...
-- ...
-- ...
+- Nothing

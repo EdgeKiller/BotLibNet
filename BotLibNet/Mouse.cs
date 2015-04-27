@@ -78,7 +78,7 @@ namespace BotLibNet
             return ((HiWord << 16) | (LoWord & 0xffff));
         }
 
-        public void SendClick(WButton button, Point pos, bool doubleclick)
+        public void SendClick(WButton button, Point pos, bool doubleclick = false)
         {
             int LParam = MakeLParam(pos.X, pos.Y), btnDown = 0, btnUp = 0;
             switch (button)
